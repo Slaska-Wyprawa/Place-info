@@ -1,6 +1,10 @@
 from OSMPythonTools.api import Api
 from OSMPythonTools.nominatim import Nominatim
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Response
+from functools import lru_cache
+import httpx
+
+from config.config import Settings
 
 OSMApi = Api()
 app = FastAPI()
@@ -11,8 +15,18 @@ places = {
         "id": "421787802",
         "lat": 50.29566,
         "lon": 18.80620
+    },
+    "kamieniolom": {
+        "id": "739500100",
+        "lat": 50.18178,
+        "lon": 18.84864
     }
 }
+
+
+@lru_cache()
+def get_settings():
+    return Settings()
 
 
 @app.get("/place/{place}")
@@ -27,7 +41,20 @@ async def get_info(place):
 @app.get("/address/{place}")
 async def get_address(place):
     if place in places:
-        place = nominatim.query(places.get(place).get('lat'), places.get(place).get('lon'), reverse=True)
+        lat = places.get(place).get('lat')
+        lon = places.get(place).get('lon')
+        place = nominatim.query(lat, lon, reverse=True)
         return place
     else:
         raise HTTPException(status_code=404, detail="Place not found")
+
+
+@app.get("/directions/start={start}&stop={stop}")
+async def get_directions(response: Response, start, stop, settings: Settings = Depends(get_settings)):
+    api_key = settings.open_route_api_key
+    async with httpx.AsyncClient() as client:
+        route = await client.get(f"https://api.openrouteservice.org/v2/directions/driving-car?"
+                                 f"api_key={api_key}&start={start}&end={stop}")
+        response.body = route.content
+        response.status_code = route.status_code
+        return response

@@ -1,3 +1,5 @@
 OSMPythonTools~=0.3.0
 fastapi~=0.66.0
-requests~=2.25.1
+pydantic~=1.8.2
+python-dotenv~=0.18.0
+httpx~=0.18.2
