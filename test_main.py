@@ -21,8 +21,8 @@ def test_get_info():
 
 
 def test_get_wrong_place_name():
-    response = client.get("/place/test_dom")
-    assert response.status_code == 404
+    response = client.get("/place/test_house")
+    assert response.status_code == 400
 
 
 def test_get_address():
@@ -37,4 +37,16 @@ def test_get_address():
                      'state_district': 'Górnośląsko-Zagłębiowska Metropolia', 'state': 'województwo śląskie',
                      'postcode': '41-806', 'country': 'Polska', 'country_code': 'pl'},
          'boundingbox': ['50.2954637', '50.2959421', '18.8055446', '18.8066599']}], '_queryString': 'reverse',
-                               '_params': {'lat': 50.29566, 'lon': 18.8062}}
+        '_params': {'lat': 50.29566, 'lon': 18.8062}}
+
+
+def test_get_wrong_address():
+    response = client.get("/address/test_house")
+    assert response.status_code == 400
+
+
+def test_get_directions():
+    response = client.get("/directions/start=8.681495,49.41461&stop=8.687872,49.420318")
+    assert response.status_code == 200
+    response_body = response.json()
+    assert response_body["type"] == "FeatureCollection"

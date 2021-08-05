@@ -35,7 +35,7 @@ async def get_info(place):
         place = OSMApi.query(f"way/{places.get(place).get('id')}")
         return place.tags()
     else:
-        raise HTTPException(status_code=404, detail="Place not found")
+        raise HTTPException(status_code=400, detail="Place not found")
 
 
 @app.get("/address/{place}")
@@ -46,15 +46,21 @@ async def get_address(place):
         place = nominatim.query(lat, lon, reverse=True)
         return place
     else:
-        raise HTTPException(status_code=404, detail="Place not found")
+        raise HTTPException(status_code=400, detail="Place not found")
 
 
 @app.get("/directions/start={start}&stop={stop}")
 async def get_directions(response: Response, start, stop, settings: Settings = Depends(get_settings)):
     api_key = settings.open_route_api_key
-    async with httpx.AsyncClient() as client:
-        route = await client.get(f"https://api.openrouteservice.org/v2/directions/driving-car?"
-                                 f"api_key={api_key}&start={start}&end={stop}")
-        response.body = route.content
-        response.status_code = route.status_code
-        return response
+
+    @lru_cache()
+    async def get_openrouteservice():
+        async with httpx.AsyncClient() as client:
+            # Coordinate of the route in longitude,latitude format.
+            route = await client.get(f"https://api.openrouteservice.org/v2/directions/driving-car?"
+                                     f"api_key={api_key}&start={start}&end={stop}")
+            response.body = route.content
+            response.status_code = route.status_code
+
+    await get_openrouteservice()
+    return response
