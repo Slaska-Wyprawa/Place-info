@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from .main import app
+from main import app
 
 client = TestClient(app)
 
@@ -28,16 +28,43 @@ def test_get_wrong_place_name():
 def test_get_address():
     response = client.get("/address/sztolnia")
     assert response.status_code == 200
-    assert response.json() == {'_json': [
-        {'place_id': 139221661, 'licence': 'Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright',
-         'osm_type': 'way', 'osm_id': 202692683, 'lat': '50.29570875', 'lon': '18.806103131597553',
-         'display_name': '408, Wolności, Zaborze Południe, Zabrze, Górnośląsko-Zagłębiowska Metropolia, województwo '
-                         'śląskie, 41-806, Polska',
-         'address': {'house_number': '408', 'road': 'Wolności', 'city_district': 'Zaborze Południe', 'city': 'Zabrze',
-                     'state_district': 'Górnośląsko-Zagłębiowska Metropolia', 'state': 'województwo śląskie',
-                     'postcode': '41-806', 'country': 'Polska', 'country_code': 'pl'},
-         'boundingbox': ['50.2954637', '50.2959421', '18.8055446', '18.8066599']}], '_queryString': 'reverse',
-        '_params': {'lat': 50.29566, 'lon': 18.8062}}
+    assert response.json() == {
+        "_json": [
+            {
+                "place_id": 184392168,
+                "licence": "Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+                "osm_type": "way",
+                "osm_id": 421787802,
+                "lat": "50.29627445",
+                "lon": "18.806930225464242",
+                "display_name": "Sztolnia Królowa Luiza, 410, Wolności, Zaborze Południe, Zabrze, "
+                                "Górnośląsko-Zagłębiowska Metropolia, województwo śląskie, 41-800, Polska",
+                "address": {
+                    "tourism": "Sztolnia Królowa Luiza",
+                    "house_number": "410",
+                    "road": "Wolności",
+                    "city_district": "Zaborze Południe",
+                    "city": "Zabrze",
+                    "state_district": "Górnośląsko-Zagłębiowska Metropolia",
+                    "state": "województwo śląskie",
+                    "postcode": "41-800",
+                    "country": "Polska",
+                    "country_code": "pl"
+                },
+                "boundingbox": [
+                    "50.2953218",
+                    "50.297211",
+                    "18.8055386",
+                    "18.8079178"
+                ]
+            }
+        ],
+        "_queryString": "reverse",
+        "_params": {
+            "lat": 50.29566,
+            "lon": 18.8062
+        }
+    }
 
 
 def test_get_wrong_address():
