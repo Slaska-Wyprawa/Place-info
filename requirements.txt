@@ -3,3 +3,6 @@ fastapi~=0.66.0
 pydantic~=1.8.2
 python-dotenv~=0.18.0
 httpx~=0.18.2
+SQLAlchemy~=1.4.23
+sqlmodel~=0.0.4
+requests~=2.26.0

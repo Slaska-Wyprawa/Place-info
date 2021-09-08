@@ -5,8 +5,8 @@ from main import app
 client = TestClient(app)
 
 
-def test_get_info():
-    response = client.get("/place/sztolnia")
+def test_get_get_osm_place_info():
+    response = client.get("/place/1")
     assert response.status_code == 200
     assert response.json() == {
         "addr:city": "Zabrze",
@@ -21,12 +21,15 @@ def test_get_info():
 
 
 def test_get_wrong_place_name():
-    response = client.get("/place/test_house")
-    assert response.status_code == 400
+    response = client.get("/place/22231")
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "OSM ID not found"
+    }
 
 
 def test_get_address():
-    response = client.get("/address/sztolnia")
+    response = client.get("/address/1")
     assert response.status_code == 200
     assert response.json() == {
         "_json": [
@@ -38,7 +41,7 @@ def test_get_address():
                 "lat": "50.29627445",
                 "lon": "18.806930225464242",
                 "display_name": "Sztolnia Królowa Luiza, 410, Wolności, Zaborze Południe, Zabrze, "
-                                "Górnośląsko-Zagłębiowska Metropolia, województwo śląskie, 41-800, Polska",
+                                "Górnośląsko-Zagłębiowska Metropolia, województwo śląskie, 41-800, Polska", 
                 "address": {
                     "tourism": "Sztolnia Królowa Luiza",
                     "house_number": "410",
@@ -61,15 +64,15 @@ def test_get_address():
         ],
         "_queryString": "reverse",
         "_params": {
-            "lat": 50.29566,
+            "lat": 50.2957,
             "lon": 18.8062
         }
     }
 
 
 def test_get_wrong_address():
-    response = client.get("/address/test_house")
-    assert response.status_code == 400
+    response = client.get("/address/512312")
+    assert response.status_code == 404
 
 
 def test_get_directions():
